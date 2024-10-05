@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="form-container">
+        <div id="progress-bar"></div>
+        <form id="multi-step-form">
+            <!-- Form fields will be dynamically inserted here -->
+        </form>
+        <div id="form-navigation">
+            <button id="prev-btn" type="button">Previous</button>
+            <button id="next-btn" type="button">Next</button>
+            <button id="submit-btn" type="button" style="display: none;">Submit</button>
+        </div>
+    </div>
+    <script src="form-fields.js" type="module"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
