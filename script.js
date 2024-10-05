@@ -1,13 +1,12 @@
 import { formFields } from './form-fields.js';
 
 let currentStep = 0;
+let formData = {};
 
 const form = document.getElementById('multi-step-form');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const submitBtn = document.getElementById('submit-btn');
-console.log(submitBtn);
-
 const progressBar = document.getElementById('progress-bar');
 
 function renderStep(step) {
@@ -25,6 +24,9 @@ function renderStep(step) {
 
     form.appendChild(fieldset);
     updateProgressBar();
+    
+    // Restore any previously entered data for this step
+    restoreFieldData(field);
 }
 
 function renderOptions(fieldset, field) {
@@ -74,7 +76,33 @@ function updateNavigation() {
     submitBtn.style.display = currentStep === formFields.length - 1 ? 'inline-block' : 'none';
 }
 
+function saveFieldData() {
+    const field = formFields[currentStep];
+    const inputs = form.querySelectorAll('input:checked');
+    
+    if (field.type === 'radio') {
+        formData[field.name] = inputs[0] ? inputs[0].value : null;
+    } else if (field.type === 'checkbox') {
+        formData[field.name] = Array.from(inputs).map(input => input.value);
+    }
+}
+
+function restoreFieldData(field) {
+    if (formData[field.name]) {
+        if (Array.isArray(formData[field.name])) {
+            formData[field.name].forEach(value => {
+                const input = form.querySelector(`input[name^="${field.name}"][value="${value}"]`);
+                if (input) input.checked = true;
+            });
+        } else {
+            const input = form.querySelector(`input[name="${field.name}"][value="${formData[field.name]}"]`);
+            if (input) input.checked = true;
+        }
+    }
+}
+
 nextBtn.addEventListener('click', () => {
+    saveFieldData();
     if (currentStep < formFields.length - 1) {
         currentStep++;
         renderStep(currentStep);
@@ -83,6 +111,7 @@ nextBtn.addEventListener('click', () => {
 });
 
 prevBtn.addEventListener('click', () => {
+    saveFieldData();
     if (currentStep > 0) {
         currentStep--;
         renderStep(currentStep);
@@ -90,16 +119,10 @@ prevBtn.addEventListener('click', () => {
     }
 });
 
-submitBtn.addEventListener('click', (e) => {
-    // Here you can handle form submission
+submitBtn.addEventListener('click', () => {
+    saveFieldData();
     console.log('Form submitted!');
-    
-    // Collect form data
-    const formData = new FormData(form);
-    const formValues = Object.fromEntries(formData.entries());
-    
-    // Log form data to console (for demonstration)
-    console.log('Form values:', formValues);
+    console.log('Form data:', formData);
 });
 
 // Initial render
