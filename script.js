@@ -143,6 +143,10 @@ function saveFieldData() {
     
     if (field.type === 'radio') {
         formData[field.name] = inputs[0] ? inputs[0].value : null;
+
+        if (field.name === 'type' && formData[field.name] === "Детский оздоровительный лагерь") {
+            formData.people = "Дети";
+        }
     } else if (field.type === 'checkbox') {
         if (field.options) {
             formData[field.name] = Array.from(inputs).map(input => input.value);

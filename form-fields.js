@@ -10,13 +10,14 @@ export const formFields = [
     type: "radio",
     name: "people",
     options: ["Взрослые", "Дети", "Все вместе"],
+    showIf: (formData) => formData.type !== "Детский оздоровительный лагерь",
   },
   {
     header: "Выберите возраст детей",
     type: "radio",
     name: "age",
     options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
-    showIf: (formData) => formData.people === "Дети" || formData.people === "Все вместе",
+    showIf: (formData) => formData.people === "Дети" || formData.people === "Все вместе" || formData.type === "Детский оздоровительный лагерь",
   },
   {
     header: "Выберите диету",
