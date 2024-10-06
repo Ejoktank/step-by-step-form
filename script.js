@@ -27,21 +27,37 @@ function renderStep(step) {
     }
 
     const fieldset = document.createElement('fieldset');
+    const fieldsetContainer = document.createElement('div');
+    fieldsetContainer.className = 'fieldset-container';
+
     const legend = document.createElement('legend');
     legend.textContent = field.header;
+
     fieldset.appendChild(legend);
+    fieldset.appendChild(fieldsetContainer);
 
     if (field.type === 'radio' || field.type === 'checkbox') {
-        field.options ? renderOptions(fieldset, field) : renderBlocks(fieldset, field);
+        field.options ? renderOptions(fieldsetContainer, field) : renderBlocks(fieldsetContainer, field);
     }
 
     form.appendChild(fieldset);
     updateProgressBar();
     
     restoreFieldData(field);
+    updateNextButtonState();
+
+    // Add event listeners to all inputs in the current step
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('change', updateNextButtonState);
+    });
 }
 
 function renderOptions(fieldset, field) {
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'options-container';
+    fieldset.appendChild(optionsContainer);
+
     field.options.forEach(option => {
         const label = document.createElement('label');
         const input = document.createElement('input');
@@ -56,7 +72,7 @@ function renderOptions(fieldset, field) {
         label.appendChild(input);
         label.appendChild(customCheckbox);
         label.appendChild(document.createTextNode(option));
-        fieldset.appendChild(label);
+        optionsContainer.appendChild(label);
     });
 }
 
@@ -64,10 +80,14 @@ function renderBlocks(fieldset, field) {
     field.blocks.forEach(block => {
         const blockDiv = document.createElement('div');
         blockDiv.className = 'checkbox-block';
+
+        const blockDivContainer = document.createElement('div');
+        blockDivContainer.className = 'checkbox-block--container';
         
-        const blockHeader = document.createElement('h4');
+        const blockHeader = document.createElement('h3');
         blockHeader.textContent = block.categoryHeader;
         blockDiv.appendChild(blockHeader);
+        blockDiv.appendChild(blockDivContainer);
 
         block.items.forEach(item => {
             const label = document.createElement('label');
@@ -83,11 +103,22 @@ function renderBlocks(fieldset, field) {
             label.appendChild(input);
             label.appendChild(customCheckbox);
             label.appendChild(document.createTextNode(item));
-            blockDiv.appendChild(label);
+            blockDivContainer.appendChild(label);
         });
 
         fieldset.appendChild(blockDiv);
     });
+}
+
+function updateNextButtonState() {
+    const field = formFields[currentStep];
+    const inputs = form.querySelectorAll('input:checked');
+    
+    if (field.type === 'radio') {
+        nextBtn.disabled = inputs.length === 0;
+    } else if (field.type === 'checkbox') {
+        nextBtn.disabled = inputs.length === 0;
+    }
 }
 
 function updateProgressBar() {
@@ -102,6 +133,8 @@ function updateNavigation() {
     prevBtn.style.display = prevStep >= 0 ? 'inline-block' : 'none';
     nextBtn.style.display = nextStep < formFields.length ? 'inline-block' : 'none';
     submitBtn.style.display = nextStep === formFields.length ? 'inline-block' : 'none';
+
+    updateNextButtonState();
 }
 
 function saveFieldData() {
@@ -191,7 +224,7 @@ prevBtn.addEventListener('click', () => {
 
 submitBtn.addEventListener('click', () => {
     saveFieldData();
-    console.log('Form submitted!');
+    alert('Form submitted!');
     console.log('Form data:', formData);
 });
 

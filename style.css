@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -13,6 +13,7 @@ body {
 
 #progress-bar {
   height: 10px;
+  margin-bottom: 10px;
   background-color: #3858e4;
   width: 0;
   transition: width 0.3s ease-in-out;
@@ -24,9 +25,17 @@ fieldset {
   margin: 0 0 20px 0;
 }
 
+.fieldset-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 20px;
+}
+
 legend {
+  font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 24px;
 }
 
 label {
@@ -35,8 +44,29 @@ label {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 10px 80px;
   margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#next-btn,
+#submit-btn {
+  background-color: #3858e4;
+  border-color: #3858e4;
+  color: #fff;
+}
+
+#next-btn:disabled {
+  background-color: #3858e4;
+  filter: grayscale(0.8);
+  cursor: default;
+}
+
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
 }
 
 .block {
@@ -60,11 +90,17 @@ input[type="radio"] {
   width: 0;
 }
 
+input[type="checkbox"]:focus-visible + .custom-checkbox,
+input[type="radio"]:focus-visible + .custom-checkbox {
+  outline: 2px solid;
+  outline-offset: 2px;
+}
+
 .custom-checkbox {
   position: relative;
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
   margin-right: 10px;
   background-color: #fff;
   border: 2px solid #3858e4;
@@ -113,9 +149,60 @@ label {
 }
 
 .checkbox-block {
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 45%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.checkbox-block h4 {
-  margin-bottom: 10px;
+.checkbox-block h3 {
+  margin: 0;
+  padding: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.checkbox-block--container {
+  padding: 16px 16px 6px 16px;
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 12px;
+  }
+  legend {
+    font-size: 16px;
+  }
+  .form-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  button {
+    padding: 10px 40px;
+  }
+  .custom-checkbox {
+    min-width: 15px;
+    min-height: 15px;
+  }
+  input[type="radio"]:checked + .custom-checkbox::after {
+    left: 4px;
+    top: 4px;
+    width: 7px;
+    height: 7px;
+  }
+  input[type="checkbox"]:checked + .custom-checkbox::after{
+    left: 5px;
+    width: 3px;
+    height: 7px;
+  }
+  .checkbox-block {
+    min-width: 100%;
+  }
+  .checkbox-block h3 {
+    padding: 10px;
+  }
+  .checkbox-block--container {
+    padding: 10px 10px 0 10px;
+  }
 }
