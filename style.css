@@ -13,7 +13,7 @@ body {
 
 #progress-bar {
   height: 10px;
-  background-color: #4CAF50;
+  background-color: #3858e4;
   width: 0;
   transition: width 0.3s ease-in-out;
 }
@@ -44,5 +44,78 @@ button {
 }
 
 .block h3 {
+  margin-bottom: 10px;
+}
+
+form {
+  user-select: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-color: #fff;
+  border: 2px solid #3858e4;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: #3858e4;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox::after,
+input[type="radio"]:checked + .custom-checkbox::after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type="radio"] + .custom-checkbox {
+  border-radius: 50%;
+}
+
+input[type="radio"]:checked + .custom-checkbox::after {
+  left: 5px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: #3858e4;
+  transform: none;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.checkbox-block {
+  margin-bottom: 20px;
+}
+
+.checkbox-block h4 {
   margin-bottom: 10px;
 }

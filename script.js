@@ -48,7 +48,13 @@ function renderOptions(fieldset, field) {
         input.type = field.type;
         input.name = field.name;
         input.value = option;
+        input.id = `${field.name}-${option.replace(/\s+/g, '-').toLowerCase()}`;
+        
+        const customCheckbox = document.createElement('span');
+        customCheckbox.className = 'custom-checkbox';
+        
         label.appendChild(input);
+        label.appendChild(customCheckbox);
         label.appendChild(document.createTextNode(option));
         fieldset.appendChild(label);
     });
@@ -69,7 +75,13 @@ function renderBlocks(fieldset, field) {
             input.type = 'checkbox';
             input.name = `${field.name}[${block.categoryName}]`;
             input.value = item;
+            input.id = `${field.name}-${block.categoryName}-${item.replace(/\s+/g, '-').toLowerCase()}`;
+            
+            const customCheckbox = document.createElement('span');
+            customCheckbox.className = 'custom-checkbox';
+            
             label.appendChild(input);
+            label.appendChild(customCheckbox);
             label.appendChild(document.createTextNode(item));
             blockDiv.appendChild(label);
         });
