@@ -16,8 +16,8 @@ function renderStep(step) {
     // Check if the field should be shown
     if (field.showIf && !field.showIf(formData)) {
         // If the field shouldn't be shown, move to the next step
-        currentStep++;
-        if (currentStep < formFields.length) {
+        if (step < formFields.length - 1) {
+            currentStep++;
             renderStep(currentStep);
         } else {
             // If we've reached the end, show the submit button
@@ -38,7 +38,6 @@ function renderStep(step) {
     form.appendChild(fieldset);
     updateProgressBar();
     
-    // Restore any previously entered data for this step
     restoreFieldData(field);
 }
 
@@ -58,16 +57,17 @@ function renderOptions(fieldset, field) {
 function renderBlocks(fieldset, field) {
     field.blocks.forEach(block => {
         const blockDiv = document.createElement('div');
-        blockDiv.className = 'block';
-        const blockHeader = document.createElement('h3');
-        blockHeader.textContent = block.category;
+        blockDiv.className = 'checkbox-block';
+        
+        const blockHeader = document.createElement('h4');
+        blockHeader.textContent = block.categoryHeader;
         blockDiv.appendChild(blockHeader);
 
         block.items.forEach(item => {
             const label = document.createElement('label');
             const input = document.createElement('input');
             input.type = 'checkbox';
-            input.name = `${field.name}[${block.category}]`;
+            input.name = `${field.name}[${block.categoryName}]`;
             input.value = item;
             label.appendChild(input);
             label.appendChild(document.createTextNode(item));
@@ -84,9 +84,12 @@ function updateProgressBar() {
 }
 
 function updateNavigation() {
-    prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
-    nextBtn.style.display = currentStep < formFields.length - 1 ? 'inline-block' : 'none';
-    submitBtn.style.display = currentStep === formFields.length - 1 ? 'inline-block' : 'none';
+    const prevStep = findPreviousStep(currentStep);
+    const nextStep = findNextStep(currentStep);
+
+    prevBtn.style.display = prevStep >= 0 ? 'inline-block' : 'none';
+    nextBtn.style.display = nextStep < formFields.length ? 'inline-block' : 'none';
+    submitBtn.style.display = nextStep === formFields.length ? 'inline-block' : 'none';
 }
 
 function saveFieldData() {
@@ -101,11 +104,11 @@ function saveFieldData() {
         } else {
             formData[field.name] = {};
             inputs.forEach(input => {
-                const [category, item] = input.name.split('[')[1].split(']');
-                if (!formData[field.name][category]) {
-                    formData[field.name][category] = [];
+                const [, categoryName] = input.name.match(/\[(.*?)\]/);
+                if (!formData[field.name][categoryName]) {
+                    formData[field.name][categoryName] = [];
                 }
-                formData[field.name][category].push(input.value);
+                formData[field.name][categoryName].push(input.value);
             });
         }
     }
@@ -123,9 +126,9 @@ function restoreFieldData(field) {
                     if (input) input.checked = true;
                 });
             } else {
-                Object.entries(formData[field.name]).forEach(([category, items]) => {
+                Object.entries(formData[field.name]).forEach(([categoryName, items]) => {
                     items.forEach(item => {
-                        const input = form.querySelector(`input[name="${field.name}[${category}]"][value="${item}"]`);
+                        const input = form.querySelector(`input[name="${field.name}[${categoryName}]"][value="${item}"]`);
                         if (input) input.checked = true;
                     });
                 });
@@ -134,10 +137,31 @@ function restoreFieldData(field) {
     }
 }
 
+function findPreviousStep(currentStep) {
+    for (let i = currentStep - 1; i >= 0; i--) {
+        const field = formFields[i];
+        if (!field.showIf || field.showIf(formData)) {
+            return i;
+        }
+    }
+    return -1; // If no previous step is found
+}
+
+function findNextStep(currentStep) {
+    for (let i = currentStep + 1; i < formFields.length; i++) {
+        const field = formFields[i];
+        if (!field.showIf || field.showIf(formData)) {
+            return i;
+        }
+    }
+    return formFields.length; // If no next step is found, return length to indicate end
+}
+
 nextBtn.addEventListener('click', () => {
     saveFieldData();
-    if (currentStep < formFields.length - 1) {
-        currentStep++;
+    const nextStep = findNextStep(currentStep);
+    if (nextStep < formFields.length) {
+        currentStep = nextStep;
         renderStep(currentStep);
         updateNavigation();
     }
@@ -145,8 +169,9 @@ nextBtn.addEventListener('click', () => {
 
 prevBtn.addEventListener('click', () => {
     saveFieldData();
-    if (currentStep > 0) {
-        currentStep--;
+    const prevStep = findPreviousStep(currentStep);
+    if (prevStep >= 0) {
+        currentStep = prevStep;
         renderStep(currentStep);
         updateNavigation();
     }

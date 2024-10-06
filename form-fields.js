@@ -30,15 +30,18 @@ export const formFields = [
     name: "menu",
     blocks: [
       {
-        category: "kasha",
+        categoryHeader: "Каши",
+        categoryName: "kashi",
         items: ["Перловая", "Геркулес", "Манная", "Гречневая"]
       },
       {
-        category: "snacks",
+        categoryHeader: "Закуски",
+        categoryName: "snacks",
         items: ["Паштет печоночный", "Белужья зернистая", "Кеты зернистая", "Фасоль консервы"]
       },
       {
-        category: "drinks",
+        categoryHeader: "Напитки",
+        categoryName: "drinks",
         items: ["Кофе", "Чай", "Сок", "Вода"]
       },
     ]
