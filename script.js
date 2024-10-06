@@ -13,6 +13,19 @@ function renderStep(step) {
     form.innerHTML = '';
     const field = formFields[step];
     
+    // Check if the field should be shown
+    if (field.showIf && !field.showIf(formData)) {
+        // If the field shouldn't be shown, move to the next step
+        currentStep++;
+        if (currentStep < formFields.length) {
+            renderStep(currentStep);
+        } else {
+            // If we've reached the end, show the submit button
+            updateNavigation();
+        }
+        return;
+    }
+
     const fieldset = document.createElement('fieldset');
     const legend = document.createElement('legend');
     legend.textContent = field.header;
@@ -83,20 +96,40 @@ function saveFieldData() {
     if (field.type === 'radio') {
         formData[field.name] = inputs[0] ? inputs[0].value : null;
     } else if (field.type === 'checkbox') {
-        formData[field.name] = Array.from(inputs).map(input => input.value);
+        if (field.options) {
+            formData[field.name] = Array.from(inputs).map(input => input.value);
+        } else {
+            formData[field.name] = {};
+            inputs.forEach(input => {
+                const [category, item] = input.name.split('[')[1].split(']');
+                if (!formData[field.name][category]) {
+                    formData[field.name][category] = [];
+                }
+                formData[field.name][category].push(input.value);
+            });
+        }
     }
 }
 
 function restoreFieldData(field) {
     if (formData[field.name]) {
-        if (Array.isArray(formData[field.name])) {
-            formData[field.name].forEach(value => {
-                const input = form.querySelector(`input[name^="${field.name}"][value="${value}"]`);
-                if (input) input.checked = true;
-            });
-        } else {
+        if (field.type === 'radio') {
             const input = form.querySelector(`input[name="${field.name}"][value="${formData[field.name]}"]`);
             if (input) input.checked = true;
+        } else if (field.type === 'checkbox') {
+            if (field.options) {
+                formData[field.name].forEach(value => {
+                    const input = form.querySelector(`input[name="${field.name}"][value="${value}"]`);
+                    if (input) input.checked = true;
+                });
+            } else {
+                Object.entries(formData[field.name]).forEach(([category, items]) => {
+                    items.forEach(item => {
+                        const input = form.querySelector(`input[name="${field.name}[${category}]"][value="${item}"]`);
+                        if (input) input.checked = true;
+                    });
+                });
+            }
         }
     }
 }

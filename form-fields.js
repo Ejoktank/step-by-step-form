@@ -16,6 +16,7 @@ export const formFields = [
     type: "radio",
     name: "age",
     options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
+    showIf: (formData) => formData.people === "Дети" || formData.people === "Все вместе",
   },
   {
     header: "Выберите диету",
