@@ -156,6 +156,16 @@
         cursor: pointer;
       }
 
+      .search {
+        box-sizing: border-box;
+        width: 100%;
+        height: 46px;
+        padding: 0 16px;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        font-size: 1rem;
+      }
+
       .checkbox-block {
         width: 100%;
         max-width: 45%;
@@ -172,6 +182,31 @@
 
       .checkbox-block--container {
         padding: 16px 16px 6px 16px;
+        max-height: 180px;
+        overflow-y: scroll;
+
+        /* Firefox */
+        scrollbar-width: thin;
+        scrollbar-color: #c7c7c7 #f1f1f1;
+      }
+
+      /* WebKit browsers */
+      .checkbox-block--container::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .checkbox-block--container::-webkit-scrollbar-track {
+        background: #c7c7c7;
+        border-radius: 10px;
+      }
+
+      .checkbox-block--container::-webkit-scrollbar-thumb {
+        background: #ffffff;
+        border-radius: 10px;
+      }
+
+      .checkbox-block--container::-webkit-scrollbar-thumb:hover {
+        background: #555;
       }
 
       @media (max-width: 600px) {
@@ -230,33 +265,33 @@
     </div>
     <script>
       const formFields = [
-        {
-          header: "Выберите тип вашего учреждения из списка ниже",
-          type: "radio",
-          name: "type",
-          options: ["Санаторий", "Детский оздоровительный лагерь", "Дом отдыха", "Реабилитационный центр"],
-        },
-        {
-          header: "Выберите тип отдыхающих",
-          type: "radio",
-          name: "people",
-          options: ["Взрослые", "Дети", "Все вместе"],
-          showIf: (formData) => formData.type !== "Детский оздоровительный лагерь",
-        },
-        {
-          header: "Выберите возраст детей",
-          type: "radio",
-          name: "age",
-          options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
-          showIf: (formData) =>
-            formData.people === "Дети" || formData.people === "Все вместе" || formData.type === "Детский оздоровительный лагерь",
-        },
-        {
-          header: "Выберите диету",
-          type: "radio",
-          name: "food_group",
-          options: ["Обычный стол без диеты", "Диетический стол №1", "Диетический стол №2", "Диетический стол №3"],
-        },
+        // {
+        //   header: "Выберите тип вашего учреждения из списка ниже",
+        //   type: "radio",
+        //   name: "type",
+        //   options: ["Санаторий", "Детский оздоровительный лагерь", "Дом отдыха", "Реабилитационный центр"],
+        // },
+        // {
+        //   header: "Выберите тип отдыхающих",
+        //   type: "radio",
+        //   name: "people",
+        //   options: ["Взрослые", "Дети", "Все вместе"],
+        //   showIf: (formData) => formData.type !== "Детский оздоровительный лагерь",
+        // },
+        // {
+        //   header: "Выберите возраст детей",
+        //   type: "radio",
+        //   name: "age",
+        //   options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
+        //   showIf: (formData) =>
+        //     formData.people === "Дети" || formData.people === "Все вместе" || formData.type === "Детский оздоровительный лагерь",
+        // },
+        // {
+        //   header: "Выберите диету",
+        //   type: "radio",
+        //   name: "food_group",
+        //   options: ["Обычный стол без диеты", "Диетический стол №1", "Диетический стол №2", "Диетический стол №3"],
+        // },
         {
           header: "Выберите блюда, которые вы хотите видеть в меню",
           type: "checkbox",
@@ -265,17 +300,40 @@
             {
               categoryHeader: "Каши",
               categoryName: "kashi",
-              items: ["Перловая", "Геркулес", "Манная", "Гречневая"],
+              items: ["Перловая", "Геркулес", "Манная", "Гречневая", "Рисовая", "Лапша", "Фасоль"],
             },
             {
               categoryHeader: "Закуски",
               categoryName: "snacks",
-              items: ["Паштет печоночный", "Белужья зернистая", "Кеты зернистая", "Фасоль консервы"],
+              items: [
+                "Паштет печоночный",
+                "Белужья зернистая",
+                "Кеты зернистая",
+                "Фасоль консервы",
+                "Закуска 1",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+                "Закуска 2",
+              ],
             },
             {
               categoryHeader: "Напитки",
               categoryName: "drinks",
-              items: ["Кофе", "Чай", "Сок", "Вода"],
+              items: ["Кофе", "Чай", "Сок", "Вода", "Пиво", "Вино", "Джин", "Текила"],
             },
           ],
         },
@@ -358,16 +416,23 @@
       }
 
       function renderBlocks(fieldset, field) {
-        field.blocks.forEach((block) => {
+        field.blocks.forEach((block, idx) => {
           const blockDiv = document.createElement("div");
           blockDiv.className = "checkbox-block";
 
           const blockDivContainer = document.createElement("div");
           blockDivContainer.className = "checkbox-block--container";
+          blockDivContainer.id = `checkbox_container-${block.categoryName}`;
+
+          const searchString = document.createElement("input");
+          searchString.className = "search";
+          searchString.placeholder = "Поиск";
+          searchString.id = `search-${block.categoryName}`;
 
           const blockHeader = document.createElement("h3");
           blockHeader.textContent = block.categoryHeader;
           blockDiv.appendChild(blockHeader);
+          blockDiv.appendChild(searchString);
           blockDiv.appendChild(blockDivContainer);
 
           block.items.forEach((item) => {
@@ -516,6 +581,28 @@
       // Initial render
       renderStep(currentStep);
       updateNavigation();
+
+      const searchStrings = document.querySelectorAll('[id^="search-"]');
+      console.log(searchStrings);
+
+      searchStrings.forEach((input) => {
+        const container = document.getElementById(`checkbox_container-${input.id.split("-")[1]}`);
+        if (!container) {
+          console.log(`Container not found for ${input.id}`);
+          return;
+        }
+        const lines = container.getElementsByTagName("label");
+
+        input.addEventListener("input", (e) => {
+          Array.from(lines)
+            .filter((line) => line.querySelector("input").value.toLowerCase().includes(e.target.value.toLowerCase()))
+            .forEach((line) => (line.style.display = "block"));
+
+          Array.from(lines)
+            .filter((line) => !line.querySelector("input").value.toLowerCase().includes(e.target.value.toLowerCase()))
+            .forEach((line) => (line.style.display = "none"));
+        });
+      });
     </script>
     <!-- <script src="form-fields.js" type="module"></script>
     <script src="script.js" type="module"></script> -->
