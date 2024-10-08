@@ -159,11 +159,11 @@
       .search {
         box-sizing: border-box;
         width: 100%;
-        height: 46px;
+        height: 52px;
         padding: 0 16px;
         border: none;
         border-bottom: 1px solid #ccc;
-        font-size: 1rem;
+        font-size: 16px;
       }
 
       .checkbox-block {
@@ -182,26 +182,27 @@
 
       .checkbox-block--container {
         padding: 16px 16px 6px 16px;
-        max-height: 180px;
-        overflow-y: scroll;
+        min-height: 180px;
+        max-height: var(--max-height, 180px);
+        overflow-y: var(--overflow-y, scroll);
 
         /* Firefox */
-        scrollbar-width: thin;
+        scrollbar-width: var(--scrollbar-width, thin);
         scrollbar-color: #c7c7c7 #f1f1f1;
       }
 
       /* WebKit browsers */
       .checkbox-block--container::-webkit-scrollbar {
-        width: 10px;
+        width: var(--scrollbar-width, 10px);
       }
 
       .checkbox-block--container::-webkit-scrollbar-track {
-        background: #c7c7c7;
+        background: #f1f1f1;
         border-radius: 10px;
       }
 
       .checkbox-block--container::-webkit-scrollbar-thumb {
-        background: #ffffff;
+        background: #888;
         border-radius: 10px;
       }
 
@@ -238,6 +239,11 @@
           left: 5px;
           width: 3px;
           height: 7px;
+        }
+        .search {
+          height: 32px;
+          padding: 10px;
+          font-size: 12px;
         }
         .checkbox-block {
           min-width: 100%;
@@ -390,6 +396,14 @@
         inputs.forEach((input) => {
           input.addEventListener("change", updateNextButtonState);
         });
+
+        if (field.blocks) {
+          const searchStrings = document.querySelectorAll('[id^="search-"]');
+          searchStrings.forEach((input) => {
+            const containerId = `checkbox_container-${input.id.split("-")[1]}`;
+            setupSearchAndScroll(input, containerId);
+          });
+        }
       }
 
       function renderOptions(fieldset, field) {
@@ -552,6 +566,72 @@
         return formFields.length; // If no next step is found, return length to indicate end
       }
 
+      function setupSearchAndScroll(searchInput, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+          console.log(`Container not found for ${containerId}`);
+          return;
+        }
+
+        setupContainerQuery(containerId);
+
+        const lines = container.getElementsByTagName("label");
+
+        // Add focus event listeners to all checkboxes
+        Array.from(lines).forEach((line) => {
+          const checkbox = line.querySelector('input[type="checkbox"]');
+          if (checkbox) {
+            checkbox.addEventListener("focus", function () {
+              this.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            });
+          }
+        });
+
+        function filterAndScrollLines(searchValue) {
+          const lowerSearchValue = searchValue.toLowerCase();
+
+          Array.from(lines).forEach((line) => {
+            const input = line.querySelector("input");
+            const matches = input.value.toLowerCase().includes(lowerSearchValue);
+            line.style.display = matches ? "block" : "none";
+          });
+
+          // After filtering, update the scrollbar
+          setupContainerQuery(containerId);
+        }
+
+        searchInput.addEventListener("input", (e) => {
+          filterAndScrollLines(e.target.value);
+        });
+      }
+
+      function setupContainerQuery(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+          console.log(`Container not found for ${containerId}`);
+          return;
+        }
+
+        function updateScrollbar() {
+          if (container.scrollHeight <= 180) {
+            container.style.setProperty("--max-height", "none");
+            container.style.setProperty("--overflow-y", "visible");
+            container.style.setProperty("--scrollbar-width", "0");
+          } else {
+            container.style.setProperty("--max-height", "180px");
+            container.style.setProperty("--overflow-y", "auto");
+            container.style.setProperty("--scrollbar-width", "thin");
+          }
+        }
+
+        // Initial call
+        updateScrollbar();
+
+        // Set up a ResizeObserver to watch for changes in the container's size
+        const resizeObserver = new ResizeObserver(updateScrollbar);
+        resizeObserver.observe(container);
+      }
+
       nextBtn.addEventListener("click", () => {
         saveFieldData();
         const nextStep = findNextStep(currentStep);
@@ -582,36 +662,6 @@
       renderStep(currentStep);
       updateNavigation();
 
-      const searchStrings = document.querySelectorAll('[id^="search-"]');
-      console.log(searchStrings);
-
-      searchStrings.forEach((input) => {
-        const container = document.getElementById(`checkbox_container-${input.id.split("-")[1]}`);
-        if (!container) {
-          console.log(`Container not found for ${input.id}`);
-          return;
-        }
-        const lines = container.getElementsByTagName("label");
-
-        Array.from(lines).forEach((line) => {
-          const checkbox = line.querySelector('input[type="checkbox"]');
-          if (checkbox) {
-            checkbox.addEventListener("focus", function () {
-              checkbox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-            });
-          }
-        });
-
-        input.addEventListener("input", (e) => {
-          Array.from(lines)
-            .filter((line) => line.querySelector("input").value.toLowerCase().includes(e.target.value.toLowerCase()))
-            .forEach((line) => (line.style.display = "block"));
-
-          Array.from(lines)
-            .filter((line) => !line.querySelector("input").value.toLowerCase().includes(e.target.value.toLowerCase()))
-            .forEach((line) => (line.style.display = "none"));
-        });
-      });
     </script>
     <!-- <script src="form-fields.js" type="module"></script>
     <script src="script.js" type="module"></script> -->
