@@ -91,11 +91,11 @@
 
       input[type="checkbox"],
       input[type="radio"] {
-        position: absolute;
         opacity: 0;
         cursor: pointer;
         height: 0;
         width: 0;
+        margin-left: -3px;
       }
 
       input[type="checkbox"]:focus-visible + .custom-checkbox,
@@ -265,33 +265,33 @@
     </div>
     <script>
       const formFields = [
-        // {
-        //   header: "Выберите тип вашего учреждения из списка ниже",
-        //   type: "radio",
-        //   name: "type",
-        //   options: ["Санаторий", "Детский оздоровительный лагерь", "Дом отдыха", "Реабилитационный центр"],
-        // },
-        // {
-        //   header: "Выберите тип отдыхающих",
-        //   type: "radio",
-        //   name: "people",
-        //   options: ["Взрослые", "Дети", "Все вместе"],
-        //   showIf: (formData) => formData.type !== "Детский оздоровительный лагерь",
-        // },
-        // {
-        //   header: "Выберите возраст детей",
-        //   type: "radio",
-        //   name: "age",
-        //   options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
-        //   showIf: (formData) =>
-        //     formData.people === "Дети" || formData.people === "Все вместе" || formData.type === "Детский оздоровительный лагерь",
-        // },
-        // {
-        //   header: "Выберите диету",
-        //   type: "radio",
-        //   name: "food_group",
-        //   options: ["Обычный стол без диеты", "Диетический стол №1", "Диетический стол №2", "Диетический стол №3"],
-        // },
+        {
+          header: "Выберите тип вашего учреждения из списка ниже",
+          type: "radio",
+          name: "type",
+          options: ["Санаторий", "Детский оздоровительный лагерь", "Дом отдыха", "Реабилитационный центр"],
+        },
+        {
+          header: "Выберите тип отдыхающих",
+          type: "radio",
+          name: "people",
+          options: ["Взрослые", "Дети", "Все вместе"],
+          showIf: (formData) => formData.type !== "Детский оздоровительный лагерь",
+        },
+        {
+          header: "Выберите возраст детей",
+          type: "radio",
+          name: "age",
+          options: ["1-2 года", "4-7 лет", "8-11 лет", "12-18 лет"],
+          showIf: (formData) =>
+            formData.people === "Дети" || formData.people === "Все вместе" || formData.type === "Детский оздоровительный лагерь",
+        },
+        {
+          header: "Выберите диету",
+          type: "radio",
+          name: "food_group",
+          options: ["Обычный стол без диеты", "Диетический стол №1", "Диетический стол №2", "Диетический стол №3"],
+        },
         {
           header: "Выберите блюда, которые вы хотите видеть в меню",
           type: "checkbox",
@@ -592,6 +592,15 @@
           return;
         }
         const lines = container.getElementsByTagName("label");
+
+        Array.from(lines).forEach((line) => {
+          const checkbox = line.querySelector('input[type="checkbox"]');
+          if (checkbox) {
+            checkbox.addEventListener("focus", function () {
+              checkbox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            });
+          }
+        });
 
         input.addEventListener("input", (e) => {
           Array.from(lines)
